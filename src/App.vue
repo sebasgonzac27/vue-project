@@ -1,5 +1,5 @@
 <script>
-import * as data from "./mails";
+import { originalMails } from "./mails";
 export default {
   name: "App",
   components: {},
@@ -9,11 +9,13 @@ export default {
       headers: ["Subject", "From", "To"],
       searchMail: "",
       mailSelected: {},
+      countTotalMails: 0,
+      countFilteredMails: 0,
     };
   },
   watch: {
     searchMail: function () {
-      this.filteredMails = data.originalMails.filter((mail) => {
+      this.filteredMails = originalMails.filter((mail) => {
         return (
           mail.from
             .toLowerCase()
@@ -25,12 +27,14 @@ export default {
           mail.body.toLowerCase().includes(this.searchMail.toLocaleLowerCase())
         );
       });
+
+      this.countFilteredMails = this.filteredMails.length;
     },
   },
   created: function () {
-    this.filteredMails = data.originalMails;
-    this.mailSelected =
-      data.originalMails.length > 0 ? data.originalMails[0] : "";
+    this.filteredMails = originalMails.reverse();
+    this.mailSelected = this.filteredMails.length > 0 ? this.filteredMails[0] : "";
+    this.countTotalMails = this.countFilteredMails = originalMails.length;
   },
   methods: {
     getMail: function (mail) {
@@ -62,9 +66,9 @@ export default {
 
     <div class="grid grid-cols-1 gap-5 xl:flex">
       <div
-        class="container border-solid rounded-xl p-1 shadow border-2 border-gray-400"
+        class="container border-solid rounded-xl p-1 shadow border-2 border-gray-40"
       >
-        <table class="min-w-full block md:table rounded-xl">
+        <table class="min-w-full block md:table rounded-xl w-auto">
           <thead class="bg-white border-b block md:table-header-group">
             <tr
               class="border border-grey-500 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto md:relative"
@@ -109,8 +113,12 @@ export default {
             </tr>
           </tbody>
         </table>
+        <span
+          >Mostrando <b>{{ countFilteredMails }}</b> resultados de
+          <b>{{ countTotalMails }}</b> registros.</span
+        >
       </div>
-      <div class="container w-full">
+      <div class="container">
         <p
           class="text-base font-normal leading-relaxed text-gray-800 p-3 mb-3 shadow border-2 border-gray-400 rounded-xl"
         >
